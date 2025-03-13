@@ -1,0 +1,14 @@
+/Users/em1t/Desktop/C#/The Chosen Few/bin/Debug/net8.0/The Chosen Few
+/Users/em1t/Desktop/C#/The Chosen Few/bin/Debug/net8.0/The Chosen Few.deps.json
+/Users/em1t/Desktop/C#/The Chosen Few/bin/Debug/net8.0/The Chosen Few.runtimeconfig.json
+/Users/em1t/Desktop/C#/The Chosen Few/bin/Debug/net8.0/The Chosen Few.dll
+/Users/em1t/Desktop/C#/The Chosen Few/bin/Debug/net8.0/The Chosen Few.pdb
+/Users/em1t/Desktop/C#/The Chosen Few/obj/Debug/net8.0/The Chosen Few.GeneratedMSBuildEditorConfig.editorconfig
+/Users/em1t/Desktop/C#/The Chosen Few/obj/Debug/net8.0/The Chosen Few.AssemblyInfoInputs.cache
+/Users/em1t/Desktop/C#/The Chosen Few/obj/Debug/net8.0/The Chosen Few.AssemblyInfo.cs
+/Users/em1t/Desktop/C#/The Chosen Few/obj/Debug/net8.0/The Chosen Few.csproj.CoreCompileInputs.cache
+/Users/em1t/Desktop/C#/The Chosen Few/obj/Debug/net8.0/The Chosen Few.dll
+/Users/em1t/Desktop/C#/The Chosen Few/obj/Debug/net8.0/refint/The Chosen Few.dll
+/Users/em1t/Desktop/C#/The Chosen Few/obj/Debug/net8.0/The Chosen Few.pdb
+/Users/em1t/Desktop/C#/The Chosen Few/obj/Debug/net8.0/The Chosen Few.genruntimeconfig.cache
+/Users/em1t/Desktop/C#/The Chosen Few/obj/Debug/net8.0/ref/The Chosen Few.dll
