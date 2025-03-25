@@ -1,0 +1,2 @@
+/Users/em1t/Documents/GitHub/The-Chosen-Few/bin/Release/net8.0/win-x64/publish/The Chosen Few.pdb
+/Users/em1t/Documents/GitHub/The-Chosen-Few/bin/Release/net8.0/win-x64/publish/The Chosen Few.exe

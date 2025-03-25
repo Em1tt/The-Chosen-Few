@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "kmdVVVqKz4U=",
+  "dgSpecHash": "ZmEy+0BTLfU=",
   "success": true,
   "projectFilePath": "/Users/em1t/Documents/GitHub/The-Chosen-Few/The Chosen Few.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/em1t/.nuget/packages/microsoft.net.illink.tasks/8.0.8/microsoft.net.illink.tasks.8.0.8.nupkg.sha512",
+    "/Users/em1t/.nuget/packages/microsoft.netcore.app.runtime.win-x64/8.0.8/microsoft.netcore.app.runtime.win-x64.8.0.8.nupkg.sha512",
+    "/Users/em1t/.nuget/packages/microsoft.aspnetcore.app.runtime.win-x64/8.0.8/microsoft.aspnetcore.app.runtime.win-x64.8.0.8.nupkg.sha512",
+    "/Users/em1t/.nuget/packages/microsoft.netcore.app.host.win-x64/8.0.8/microsoft.netcore.app.host.win-x64.8.0.8.nupkg.sha512"
+  ],
   "logs": []
 }
