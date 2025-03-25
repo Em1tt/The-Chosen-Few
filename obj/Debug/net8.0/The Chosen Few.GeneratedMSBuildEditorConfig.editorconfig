@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = The_Chosen_Few
-build_property.ProjectDir = /Users/em1t/Desktop/C#/The Chosen Few/
+build_property.ProjectDir = /Users/em1t/Documents/GitHub/The-Chosen-Few/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

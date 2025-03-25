@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/em1t/Desktop/C#/The Chosen Few/The Chosen Few.csproj",
+      "projectUniqueName": "/Users/em1t/Documents/GitHub/The-Chosen-Few/The Chosen Few.csproj",
       "projectName": "The Chosen Few",
-      "projectPath": "/Users/em1t/Desktop/C#/The Chosen Few/The Chosen Few.csproj",
+      "projectPath": "/Users/em1t/Documents/GitHub/The-Chosen-Few/The Chosen Few.csproj",
       "packagesPath": "/Users/em1t/.nuget/packages/",
-      "outputPath": "/Users/em1t/Desktop/C#/The Chosen Few/obj/",
+      "outputPath": "/Users/em1t/Documents/GitHub/The-Chosen-Few/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/em1t/.nuget/NuGet/NuGet.Config"

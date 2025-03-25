@@ -2,145 +2,105 @@ namespace The_Chosen_Few
 {
     public class GameManager
     {
-        private static int difficulty = 0;
+        public static void Main()
+        {
+            _ = new GameManager();
+        }
+        public static int difficulty = 0;
+        private static int startingCards = 2;
 
-        //Play points
-        private static int faith = 0;
+        public static int cardsPlayed = 0;
+        public static int cardsUpgraded = 0;
 
         //Upgrade points
         private static int ascension = 0;
-
         //Target points
-        private static int influence = 0;
+        public static int influence = 0;
         private static int day = 0;
-
-        private static int maxDays = 14;
+        private static int maxDays = 10;
         private static int neededDayInfluence = 0;
+        private static int neededAscension = 20;
         private static int neededInfluence = 0;
 
-        private static int startFaith = 30;
+        private static CardManager? cardManager; // Card management
+
+        public static CardManager CardManager => cardManager;
+        private static int startFaith = 40;
+        private static int expeditionFaith = startFaith;
+        private static int expeditionInfluence = 0;
+        public static int ExpeditionFaith { get => expeditionFaith; set => expeditionFaith = value; }
+
+        public static int ExpeditionInfluence { get => expeditionInfluence; set => expeditionInfluence = value; }
+
+        private static float currentTurnMultiplier = 1.0f;
+        public static float CurrentTurnMultiplier
+        {
+            get => currentTurnMultiplier;
+            set => currentTurnMultiplier = value;
+        }
+
+        // Add access to faith gained times counter
+        private static int faithGainedTimes = 0;
+        public static int FaithGainedTimes
+        {
+            get => faithGainedTimes;
+            set => faithGainedTimes = value;
+        }
+
+        // Add access to influence gained times counter
+        private static int influenceGainedTimes = 0;
+        public static int InfluenceGainedTimes
+        {
+            get => influenceGainedTimes;
+            set => influenceGainedTimes = value;
+        }
+
+        // Add a method to access cards played this turn
+        private static List<CardInfo> currentPlayedCards = new List<CardInfo>();
+
+        public static List<CardInfo> CurrentPlayedCards { get => currentPlayedCards; set => currentPlayedCards = value; }
+
+        // Add a method to get current currentHand
+        private static List<Card> currentHand = new List<Card>();
+        public static List<Card> CurrentHand { set => currentHand = value; get => currentHand; }
+
+        private static int startFaithLevel = 1;
+        private static int startingCardsLevel = 1;
 
         public GameManager()
         {
-            StartGame();
+            Util.StartGame();
         }
 
-        private static void StartGame()
+        public static void InitializeDifficulty()
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("  _______ _             _____ _                            ______            ");
-            Console.WriteLine(" |__   __| |           / ____| |                          |  ____|           ");
-            Console.WriteLine("    | |  | |__   ___  | |    | |__   ___  ___  ___ _ __   | |__ _____      __");
-            Console.WriteLine("    | |  | '_ \\ / _ \\ | |    | '_ \\ / _ \\/ __|/ _ \\ '_ \\  |  __/ _ \\ \\ /\\ / /");
-            Console.WriteLine("    | |  | | | |  __/ | |____| | | | (_) \\__ \\  __/ | | | | | |  __/\\ V  V / ");
-            Console.WriteLine("    |_|  |_| |_|\\___|  \\_____|_| |_|\\___/|___/\\___|_| |_| |_|  \\___| \\_/\\_/  ");
-            Console.WriteLine("                                                                             ");
-            Console.WriteLine("                                                                             ");
-            Console.ResetColor();
-            System.Threading.Thread.Sleep(1000);
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("The world is blind, lost in chaos, searching for meaning. But you? You have seen the truth. You are the voice of enlightenment, the bridge between mortals and the divine. With whispers and wonders, you gather the faithful, shaping their devotion into power.");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Enter to continue...");
-            Console.ReadLine();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("But the path to ascension is treacherous. Rivals spread their own twisted truths, the authorities watch with wary eyes, and even your most loyal followers may waver. Will you guide them to salvation, or will doubt and betrayal unravel your sacred vision?");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Enter to continue...");
-            Console.ReadLine();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("The time has come. The faithful are waiting. Will you lead them to the light… or into the abyss?");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Enter to continue...");
-            Console.ReadLine();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\u001b[1mChoose your faction:\u001b[0m");
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("1. The Cult of the void [EASY]");
-            Console.WriteLine("2. The Cult of the Gray [MEDIUM]");
-            Console.WriteLine("3. The Cult of the Black Sun [HARD]");
 
-            //Repeat until difficulty chosen
-            string? inputDif = Console.ReadLine() ?? string.Empty;
-            while (difficulty == 0)
-            {
-                switch (inputDif)
-                {
-                    case "1":
-                        difficulty = 1;
-                        break;
-                    case "2":
-                        difficulty = 2;
-                        break;
-                    case "3":
-                        difficulty = 3;
-                        break;
-                    default:
-                        Console.WriteLine("Invalid input. Please enter a number between 1 and 3.");
-                        inputDif = Console.ReadLine();
-                        break;
-                }
-            }
-            InitializeDifficulty();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\u001b[1mEnable tutorial? (Y / N)\u001b[0m");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("");
-            string? inputTutorial = Console.ReadLine() ?? string.Empty;
-            while (inputTutorial != "Y" && inputTutorial != "N")
-            {
-                Console.WriteLine("Invalid input. Please enter Y or N.");
-                inputTutorial = Console.ReadLine();
-            }
-            if (inputTutorial == "Y")
-            {
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.WriteLine("You must gather influence to ascend. Gather influence by going on expeditions. Beware, if you fail an expedition your fate will be sealed.");
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("Enter to continue...");
-                Console.ReadLine();
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.WriteLine("When you enter an expedition, you will be given starting faith. You can use faith to play cards. Each card has a cost, and you can only play cards if you have enough faith. The dealt cards are random, and you need to play your hand efficiently. Played cards are read in order you play them, after you submit your turn. You will have 3 turns to play cards. Upon completing an expedition, the accumulated influence will be added to your total influence, and you will unlock a new card.");
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("Enter to continue...");
-                Console.ReadLine();
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.WriteLine("You can visit the shrine to upgrade your cards with ascension points. Out of all your cards, random three cards will be selected, out of which you can upgrade only one.");
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("Enter to continue...");
-                Console.ReadLine();
-            }
-            Util.DisplayGlitchIntroMessage();
-            Loop();
-        }
-
-        private static void InitializeDifficulty()
-        {
             switch (difficulty)
             {
                 case 1:
-                    neededInfluence = 10000;
-                    neededDayInfluence = 30;
+                    neededInfluence = 1200;
+                    cardManager = new CardManager(1);
                     break;
                 case 2:
-                    neededInfluence = 20000;
-                    neededDayInfluence = 50;
+                    neededInfluence = 2000;
+                    cardManager = new CardManager(2);
                     break;
                 case 3:
-                    neededInfluence = 30000;
-                    neededDayInfluence = 70;
+                    neededInfluence = 4000;
+                    cardManager = new CardManager(3);
                     break;
             }
+            neededDayInfluence = Util.CalculateNeededDayInfluence(day);
         }
 
         public static void Loop()
         {
             while (day < maxDays)
             {
+                neededDayInfluence = Util.CalculateNeededDayInfluence(day);
                 DrawHomeUI();
-                Console.WriteLine($"1. Go on an expedition [Needed Influence: {neededDayInfluence}]");
-                Console.WriteLine("2. Visit the shrine");
+                Console.WriteLine($"1. Go on an expedition [Gather influence: {neededDayInfluence}]");
+                Console.WriteLine($"2. Visit the shrine [Needed Ascension: {neededAscension}]");
                 Console.WriteLine("3. Visit the chapel");
                 string action = Console.ReadLine() ?? string.Empty;
                 switch (action)
@@ -149,152 +109,692 @@ namespace The_Chosen_Few
                         Expedition();
                         break;
                     case "2":
-                        //Shrine();
+                        Shrine();
                         break;
                     case "3":
-                        //Chapel();
+                        Chapel();
                         break;
                     default:
                         Console.WriteLine("Invalid input. Please enter a number between 1 and 3.");
                         break;
                 }
             }
-        }
-        public static void Main(string[] args)
-        {
-            GameManager game = new GameManager();
+            //Win or lose condtion for the end
+            if (day == maxDays)
+            {
+                if (influence >= neededInfluence)
+                {
+                    Util.WinGame();
+                }
+                else
+                {
+                    startFaithLevel = 1;
+                    startingCardsLevel = 1;
+                    Util.LoseGameTime();
+                }
+            }
         }
 
         public static void DrawHomeUI()
         {
             Console.Clear();
-            Console.WriteLine($"\u001b[1m\u001b[32mDay {day} | Ascension: 0 | Influence: {influence} / {neededInfluence}\u001b[0m");
+            Console.WriteLine($"\u001b[1m\u001b[32mDay {day+1}/{maxDays} | Ascension: {ascension} | Influence: {influence} / {neededInfluence}\u001b[0m");
         }
 
         private static void Expedition()
-{
-    Console.Clear();
-    Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.WriteLine("\u001b[1mEXPEDITION\u001b[0m");
-    Console.ResetColor();
-
-    // Initialize expedition values
-    int expeditionFaith = startFaith; // Starting faith
-    int expeditionInfluence = 0; // Accumulated influence
-    int turnsRemaining = 3; // Total turns
-    CardManager cardManager = new CardManager(); // Card management
-    List<Card> hand = new List<Card>(); // Player's hand
-    List<Card> cardsPlayedThisTurn = new List<Card>(); // Track cards played this turn
-
-    // Create a game state for this expedition
-    GameState gameState = new GameState(cardManager);
-
-    // Draw initial cards (assuming 5 cards)
-    for (int i = 0; i < 5; i++)
-    {
-        // In a real implementation, you would draw cards from the deck
-        hand.Add(new TheFirstSermon());
-    }
-
-    // Main expedition loop
-    while (turnsRemaining > 0)
-    {
-        Console.Clear();
-        Console.WriteLine($"\u001b[1mTurn {4 - turnsRemaining} of 3 | Faith: {expeditionFaith} | Influence: {expeditionInfluence}/{neededDayInfluence}\u001b[0m");
-        
-        // Display cards played this turn
-        if (cardsPlayedThisTurn.Count > 0)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\u001b[1mCards Played This Turn:\u001b[0m");
-            foreach (var playedCard in cardsPlayedThisTurn)
-            {
-                Console.WriteLine($"- {playedCard.Name} | Influence: {playedCard.InfluenceGain} | Faith Cost: {playedCard.FaithCost} | Faith Gain: {playedCard.FaithGain} | Multiplier: x{playedCard.InfluenceMultiplier.ToString("0.0")}");
-            }
-            Console.WriteLine();
-        }
-        
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("Your hand:");
 
-        // Display cards in hand with detailed info
-        for (int i = 0; i < hand.Count; i++)
-        {
-            Card card = hand[i];
-            Console.WriteLine($"{i + 1}. {card.Name} - Cost: {card.FaithCost} Faith | Influence: {card.InfluenceGain} | Faith Gain: {card.FaithGain} | Multiplier: x{card.InfluenceMultiplier.ToString("0.0")}");
-            Console.WriteLine($"   {card.Description}");
-        }
+            const int maxCardsPerTurn = 7;
 
-        Console.WriteLine("\nWhich card would you like to play? (Enter card number, or 0 to end turn)");
-
-        // Process card selection
-        string selection = Console.ReadLine() ?? string.Empty;
-        if (selection == "0")
-        {
-            // End turn - clear the played cards list
-            cardsPlayedThisTurn.Clear();
-            turnsRemaining--;
+            GameState gameState = new GameState(cardManager);
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\u001b[1mEXPEDITION\u001b[0m");
+            Console.ResetColor();
             expeditionFaith = startFaith;
-            continue;
-        }
+            expeditionInfluence = 0;
+            faithGainedTimes = 0;  // Use the static variable
+            influenceGainedTimes = 0;  // Use the static variable
+            int turnsRemaining = 2;
+            currentHand = new List<Card>();  // Use the static variable
+            currentPlayedCards = new List<CardInfo>();  // Use the static variable
+            currentTurnMultiplier = 1.0f;
 
-        // Try to parse the selection
-        if (int.TryParse(selection, out int cardIndex) && cardIndex > 0 && cardIndex <= hand.Count)
-        {
-            Card selectedCard = hand[cardIndex - 1];
-
-            // Check if player has enough faith
-            if (expeditionFaith >= selectedCard.FaithCost)
+            if (cardManager == null)
             {
-                // Play the card
-                expeditionFaith -= selectedCard.FaithCost;
-                expeditionFaith += selectedCard.FaithGain; // Apply any faith gain
-                int gainedInfluence = selectedCard.Play(gameState);
-                expeditionInfluence += gainedInfluence;
-
-                // Add the card to played cards this turn
-                cardsPlayedThisTurn.Add(selectedCard);
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"You played {selectedCard.Name} and gained {gainedInfluence} influence!");
-                if (selectedCard.FaithGain > 0)
-                    Console.WriteLine($"You also gained {selectedCard.FaithGain} faith!");
-                Console.ResetColor();
+                Console.WriteLine("Error: Card manager not initialized. Please set difficulty first.");
                 Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
+                return;
+            }
 
-                // Remove the played card from hand
-                hand.RemoveAt(cardIndex - 1);
+            // Draw initial cards
+            for (int i = 0; i < startingCards; i++)
+            {
+                Card randomCard = cardManager.GetRandomCard(currentHand, currentPlayedCards);
+                currentHand.Add(randomCard);
+            }
 
-                // Draw a new card if the deck isn't empty
-                hand.Add(new TheFirstSermon());
+            // Main expedition loop
+            while (turnsRemaining > 0)
+            {
+                // Display turn info with multiplier
+                Console.Clear();
+
+                // Show played cards and currentHand
+                if (currentPlayedCards.Count > 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"\u001b[1mCards Played This Turn: ({currentPlayedCards.Count}/{maxCardsPerTurn})\u001b[0m");
+                    DrawCardTable(currentPlayedCards.Cast<object>().ToList(), false, false);
+                    Console.WriteLine();
+                }
+
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("\u001b[1mYour Hand:\u001b[0m");
+                DrawCardTable(currentHand.Cast<object>().ToList());
+                Console.WriteLine();
+                Console.BackgroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"\u001b[1mTurn {3 - turnsRemaining} of 2 | Faith: {expeditionFaith} | Influence: {expeditionInfluence}/{neededDayInfluence}\u001b[0m");
+                Console.ResetColor();
+                if (currentTurnMultiplier > 1.0f)
+                {
+                    Console.WriteLine($"\u001b[1m\u001b[33mActive Multiplier: x{currentTurnMultiplier.ToString("0.0")}\u001b[0m");
+                }
+
+                if (currentPlayedCards.Count >= maxCardsPerTurn)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("You've played the maximum number of cards for this turn!");
+                    Console.ResetColor();
+                    Console.WriteLine("Press Enter to end turn...");
+                    Console.ReadLine();
+
+                    // End the turn automatically
+                    currentTurnMultiplier = 1.0f;
+                    faithGainedTimes = 0;
+                    influenceGainedTimes = 0;
+                    currentPlayedCards.Clear();
+                    turnsRemaining--;
+                    expeditionFaith = startFaith;
+                    currentHand.Clear();
+
+                    // Draw new cards for next turn
+                    for (int i = 0; i < startingCards; i++)
+                    {
+                        Card randomCard = cardManager.GetRandomCard(currentHand, currentPlayedCards);
+                        currentHand.Add(randomCard);
+                    }
+                    continue;
+                }
+
+
+                Console.WriteLine("Which card would you like to play? (Enter card number, or 0 to end turn)");
+
+                string selection = Console.ReadLine() ?? string.Empty;
+                if (selection == "0")
+                {
+                    currentTurnMultiplier = 1.0f;
+                    faithGainedTimes = 0;
+                    influenceGainedTimes = 0;
+                    currentPlayedCards.Clear();
+                    turnsRemaining--;
+                    expeditionFaith = startFaith;
+                    currentHand.Clear();
+
+                    // Draw new cards for next turn
+                    for (int i = 0; i < startingCards; i++)
+                    {
+                        Card randomCard = cardManager.GetRandomCard(currentHand, currentPlayedCards);
+                        currentHand.Add(randomCard);
+                    }
+                    continue;
+                }
+
+                // Try to parse the selection
+                if (int.TryParse(selection, out int cardIndex) && cardIndex > 0 && cardIndex <= currentHand.Count)
+                {
+                    Card selectedCard = currentHand[cardIndex - 1];
+
+                    // Check if player has enough faith
+                    if (expeditionFaith >= selectedCard.FaithCost)
+                    {
+                        // Play the card
+                        selectedCard.Play(gameState, cardIndex);
+                    }
+                    else
+                    {
+                        // Not enough faith
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Not enough faith to play this card!");
+                        Console.ResetColor();
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+                    }
+                }
+                else
+                {
+                    // Invalid selection
+                    Console.WriteLine("Invalid selection. Try again.");
+                    Console.WriteLine("Press Enter to continue...");
+                    Console.ReadLine();
+                }
+            }
+
+            // Check if expedition was successful
+            if (expeditionInfluence < neededDayInfluence)
+            {
+                // Expedition failed
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Expedition failed! You only gained {expeditionInfluence}/{neededDayInfluence} influence.");
+                Console.ResetColor();
+                Console.WriteLine("Press Enter to continue...");
+                startFaithLevel = 1;
+                startingCardsLevel = 1;
+                Util.DisplayGlitchDeathMessage();
+                Restart();
+                Console.ReadLine();
+                return;
+            }
+
+            // Expedition complete
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Expedition complete! You gained {expeditionInfluence} influence. Choose a card to unlock:");
+            Console.ResetColor();
+
+            // Get three random cards and store them
+            List<Card> cardsToChooseFrom = cardManager.GetThreeRandomCards();
+
+            for (int i = 0; i < cardsToChooseFrom.Count; i++)
+            {
+                Card card = cardsToChooseFrom[i];
+                Console.ForegroundColor = card.Rarity switch
+                {
+                    1 => ConsoleColor.Gray,// Common
+                    2 => ConsoleColor.Blue,// Rare
+                    3 => ConsoleColor.Magenta,// Epic
+                    4 => ConsoleColor.Yellow,// Legendary
+                    _ => ConsoleColor.White,// Default color
+                };
+                Console.WriteLine($"{i + 1}. {card.Name} - Rarity: {card.Rarity}");
+                Console.WriteLine($"   {card.Description}");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine("Enter the number of the card you want to unlock:");
+            string? unlockSelection = Console.ReadLine();
+            int unlockIndex;
+            while (true)
+            {
+                // Try to parse as a card selection
+                if (int.TryParse(unlockSelection, out unlockIndex) && unlockIndex > 0 && unlockIndex <= cardsToChooseFrom.Count)
+                {
+                    // Valid card selection - continue with the game
+                    break;
+                }
+
+                // If we got here, the input was invalid or empty
+                Console.WriteLine("Invalid selection. Please choose a card number:");
+                unlockSelection = Console.ReadLine();
+            }
+            if (unlockIndex > 0 && unlockIndex <= cardsToChooseFrom.Count)
+            {
+                // Add the selected card to the player's deck
+                Card unlockedCard = cardsToChooseFrom[unlockIndex - 1];
+                cardManager.AddCardToDeck(unlockedCard);
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"You unlocked {unlockedCard.Name}!");
+                Console.ResetColor();
+                Console.WriteLine("Press Enter to continue...");
+
+                // Increment day, add influence and ascension
+                day++;
+                influence += expeditionInfluence;
+                ascension += expeditionInfluence;
+
+                Console.ReadLine();
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Not enough faith to play this card!");
-                Console.ResetColor();
+                Console.WriteLine("Invalid selection. No card unlocked.");
+                // Still increment day and add rewards
+                day++;
+                influence += expeditionInfluence;
+                ascension += expeditionInfluence;
+
                 Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
             }
         }
-        else
+
+        private static void Shrine()
         {
-            Console.WriteLine("Invalid selection. Try again.");
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("\u001b[1mSHRINE\u001b[0m");
+            Console.ResetColor();
+
+            // Check if player has enough ascension
+            if (ascension < neededAscension)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"You need {neededAscension} ascension to enter the shrine. You only have {ascension}.");
+                Console.ResetColor();
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            // Subtract the ascension cost
+            ascension -= neededAscension;
+            int currentCost = neededAscension;
+
+            // Get three random cards from the player's deck
+            List<Card> upgradeOptions = cardManager.GetRandomCardsFromDeck(3);
+
+            if (upgradeOptions.Count == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("You don't have any cards to upgrade.");
+                Console.ResetColor();
+                // Refund full cost if no cards available
+                ascension += currentCost;
+                Console.WriteLine($"Your {currentCost} ascension has been refunded.");
+                Console.WriteLine("Press Enter to continue...");
+                Console.ReadLine();
+                return;
+            }
+
+            // Main selection loop - continue until valid selection is made
+            bool selectionMade = false;
+            while (!selectionMade)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine("\u001b[1mSHRINE\u001b[0m");
+                Console.ResetColor();
+
+                Console.WriteLine($"You spend {currentCost} ascension to enter the shrine.");
+                Console.WriteLine("Select a card to upgrade:");
+
+                // Display available cards
+                for (int i = 0; i < upgradeOptions.Count; i++)
+                {
+                    Card card = upgradeOptions[i];
+                    Console.ForegroundColor = card.Rarity switch
+                    {
+                        1 => ConsoleColor.Gray,      // Common
+                        2 => ConsoleColor.Blue,      // Rare
+                        3 => ConsoleColor.Magenta,   // Epic
+                        4 => ConsoleColor.Yellow,    // Legendary
+                        _ => ConsoleColor.White,     // Default color
+                    };
+
+                    // Get the upgrade preview information
+                    CardUpgradeInfo upgradeInfo = cardManager.GetCardUpgradeInfo(card);
+
+                    Console.WriteLine($"{i + 1}. {card.Name} (Level {card.UpgradeLevel}+1/{card.MaxUpgradeLevel})");
+                    if (card.FaithCost != upgradeInfo.NewFaithCost)
+                    {
+                        Console.WriteLine($"Faith cost: {card.FaithCost} » \u001b[1m{upgradeInfo.NewFaithCost}\u001b[0m");
+                    }
+                    if (card.InfluenceGain != upgradeInfo.NewInfluenceGain)
+                    {
+                        Console.WriteLine($"Influence: {card.InfluenceGain} » \u001b[1m{upgradeInfo.NewInfluenceGain}\u001b[0m");
+                    }
+                    if (card.FaithGain != upgradeInfo.NewFaithGain)
+                    {
+                        Console.WriteLine($"Faith Gain: {card.FaithGain} » \u001b[1m{upgradeInfo.NewFaithGain}\u001b[0m");
+                    }
+                    if (card.InfluenceMultiplier != upgradeInfo.NewInfluenceMultiplier)
+                    {
+                        Console.WriteLine($"Multiplier: x{card.InfluenceMultiplier.ToString("0.0")} » \u001b[1mx{upgradeInfo.NewInfluenceMultiplier.ToString("0.0")}\u001b[0m");
+                    }
+                    Console.WriteLine();
+                    Console.ResetColor();
+                }
+
+                Console.WriteLine($"{upgradeOptions.Count + 1}. Leave (Refund {currentCost / 2} ascension)");
+
+                string? selection = Console.ReadLine();
+
+                if (int.TryParse(selection, out int selectedIndex) && selectedIndex > 0)
+                {
+                    if (selectedIndex <= upgradeOptions.Count)
+                    {
+                        // Upgrade the selected card
+                        Card selectedCard = upgradeOptions[selectedIndex - 1];
+                        cardManager.UpgradeCard(selectedCard); 
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"You upgraded {selectedCard.Name} to level {selectedCard.UpgradeLevel}!");
+                        Console.ReadLine();
+                        Console.ResetColor();
+
+                        // Increase the cost for next shrine visit
+                        IncreaseShrineCost();
+
+                        selectionMade = true;
+                    }
+                    else if (selectedIndex == upgradeOptions.Count + 1)
+                    {
+                        // Player chose to leave - refund half the cost
+                        int refund = currentCost / 2;
+                        ascension += refund;
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"You leave the shrine. {refund} ascension has been refunded.");
+                        Console.ResetColor();
+
+                        selectionMade = true;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid selection. Please choose from the available options.");
+                        Console.ResetColor();
+                        Console.ReadLine();
+                    }
+                }
+            }
+        }
+
+        private static void IncreaseShrineCost()
+        {
+            // Non-linear increase in shrine cost
+            double baseCost = difficulty switch
+            {
+                1 => 10.0,  // Easy
+                2 => 15.0,  // Medium
+                3 => 20.0,  // Hard
+                _ => 10.0   // Default
+            };
+
+            int upgradeCount = GetTotalUpgradeCount();
+            double exponent = 1.2;  // Less steep than expedition curve
+
+            neededAscension = (int)(baseCost + Math.Pow(upgradeCount + 1, exponent) * 5);
+        }
+
+        private static int GetTotalUpgradeCount()
+        {
+            // Get the sum of all card levels in the player's deck
+            return cardManager?.GetPlayerDeck()?.Sum(card => card.UpgradeLevel) ?? 0;
+        }
+
+        private static void Chapel()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\u001b[1mCHAPEL\u001b[0m");
+            Console.ResetColor();
+            Console.WriteLine("Here you can strengthen your spiritual foundation.");
+            Console.WriteLine($"Current Ascension: {ascension}");
+            Console.WriteLine();
+
+            // Check if upgrades have reached their maximum levels
+            bool faithUpgradeMaxed = startFaithLevel >= 8;
+            bool cardsUpgradeMaxed = startingCardsLevel >= 4;
+
+            // Calculate costs only if not maxed out
+            int faithUpgradeCost = faithUpgradeMaxed ? 0 : CalculateChapelUpgradeCost(startFaithLevel, 1.4);
+            int cardsUpgradeCost = cardsUpgradeMaxed ? 0 : CalculateChapelUpgradeCost(startingCardsLevel, 2.2);
+
+            // Display options
+            Console.Write("1. ");
+            if (faithUpgradeMaxed)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write("Strengthen Faith Foundation ");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("[\u001b[1mMAX LEVEL\u001b[0m]");
+                Console.ResetColor();
+                Console.WriteLine($"   Current Starting Faith: \u001b[1m{startFaith}\u001b[0m (Level {startFaithLevel}/8)");
+            }
+            else
+            {
+                Console.WriteLine("Strengthen Faith Foundation");
+                Console.WriteLine($"   Current Starting Faith: \u001b[1m{startFaith}\u001b[0m (Level {startFaithLevel}/8)");
+                Console.WriteLine($"   Upgrade to \u001b[1m{startFaith + 10}\u001b[0m starting Faith");
+                Console.WriteLine($"   Cost: \u001b[1m{faithUpgradeCost}\u001b[0m Ascension");
+            }
+            Console.WriteLine();
+
+            Console.Write("2. ");
+            if (cardsUpgradeMaxed)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write("Expand Divine Knowledge ");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("[\u001b[1mMAX LEVEL\u001b[0m]");
+                Console.ResetColor();
+                Console.WriteLine($"   Current Starting Cards: \u001b[1m{startingCards}\u001b[0m (Level {startingCardsLevel}/4)");
+            }
+            else
+            {
+                Console.WriteLine("Expand Divine Knowledge");
+                Console.WriteLine($"   Current Starting Cards: \u001b[1m{startingCards}\u001b[0m (Level {startingCardsLevel}/4)");
+                Console.WriteLine($"   Upgrade to \u001b[1m{startingCards + 1}\u001b[0m starting Cards");
+                Console.WriteLine($"   Cost: \u001b[1m{cardsUpgradeCost}\u001b[0m Ascension");
+            }
+            Console.WriteLine();
+
+            Console.WriteLine("0. Leave Chapel");
+
+            string? selection = Console.ReadLine();
+
+            switch (selection)
+            {
+                case "1":
+                    // Upgrade starting faith
+                    if (faithUpgradeMaxed)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Faith foundation is already at maximum level (8/8).");
+                        Console.ResetColor();
+                    }
+                    else if (ascension >= faithUpgradeCost)
+                    {
+                        ascension -= faithUpgradeCost;
+                        startFaith += 10;
+                        startFaithLevel++;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Faith foundation strengthened! Starting Faith is now {startFaith}.");
+
+                        // Check if we just reached max level
+                        if (startFaithLevel >= 8)
+                        {
+                            Console.WriteLine("You have reached the maximum faith level!");
+                        }
+
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Not enough Ascension. You need {faithUpgradeCost}.");
+                        Console.ResetColor();
+                    }
+                    break;
+
+                case "2":
+                    // Upgrade starting cards
+                    if (cardsUpgradeMaxed)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Divine knowledge is already at maximum level (4/4).");
+                        Console.ResetColor();
+                    }
+                    else if (ascension >= cardsUpgradeCost)
+                    {
+                        ascension -= cardsUpgradeCost;
+                        startingCards += 1;
+                        startingCardsLevel++;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Divine knowledge expanded! Starting Cards is now {startingCards}.");
+
+                        // Check if we just reached max level
+                        if (startingCardsLevel >= 4)
+                        {
+                            Console.WriteLine("You have reached the maximum cards level!");
+                        }
+
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Not enough Ascension. You need {cardsUpgradeCost}.");
+                        Console.ResetColor();
+                    }
+                    break;
+
+                case "0":
+                    // Leave chapel
+                    Console.WriteLine("You leave the chapel.");
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid selection.");
+                    break;
+            }
+
             Console.WriteLine("Press Enter to continue...");
             Console.ReadLine();
         }
 
-        // Check if all cards have been played
-        if (hand.Count == 0)
+        private static int CalculateChapelUpgradeCost(int currentUpgradeLevel, double exponent = 1.6)
         {
-            Console.WriteLine("You have played all your cards. Turn ending.");
-            cardsPlayedThisTurn.Clear(); // Clear played cards for next turn
-            turnsRemaining--;
-        }
-    }
+            // Base cost + non-linear increase based on current level
+            int baseCost = 30;
 
-    // Expedition complete code remains the same...
-}
+            // If it's the first upgrade, use the base cost
+            if (currentUpgradeLevel <= 0)
+                return baseCost;
+
+            // Otherwise, calculate based on the upgrade level
+            return baseCost + (int)(Math.Pow(currentUpgradeLevel, exponent) * 10);
+        }
+
+        // Add this utility method to draw tables
+        private static void DrawCardTable(List<object> cards, bool isHand = true, bool showIndex = true)
+        {
+            // Define table column widths
+            const int idxWidth = 3;
+            const int nameWidth = 28;
+            const int costWidth = 12;
+            const int influenceWidth = 12;
+            const int faithGainWidth = 12;
+            const int multiplierWidth = 12;
+            const int cardsToPickWidth = 12;
+
+            // Draw table header
+            string header = showIndex ? $"{"#".PadRight(idxWidth)} | " : "";
+            header += $"{"Name".PadRight(nameWidth)} | {"Faith cost".PadRight(costWidth)} | {"Influence".PadRight(influenceWidth)} | {"Faith Gain".PadRight(faithGainWidth)} | {"Multiplier".PadRight(multiplierWidth)} | {"Pick cards".PadRight(cardsToPickWidth)}";
+
+            Console.WriteLine(new string('-', header.Length));
+            Console.WriteLine(header);
+            Console.WriteLine(new string('-', header.Length));
+
+            // Draw each card row
+            for (int i = 0; i < cards.Count; i++)
+            {
+                ConsoleColor color = ConsoleColor.White;
+                string name = "Unknown Card";
+                int rarity = 0;
+                int faithCost = 0;
+                int influenceGain = 0;
+                int faithGain = 0;
+                float influenceMultiplier = 1.0f;
+                string description = "";
+                int cardsToPick = 0;
+
+                // Get properties based on object type
+                if (cards[i] is Card card)
+                {
+                    CardInfo cardInfo = card.GetCardInfoObject();
+                    name = cardInfo.Name;
+                    rarity = cardInfo.Rarity;
+                    faithCost = cardInfo.FaithCost;
+                    influenceGain = cardInfo.InfluenceGain;
+                    faithGain = cardInfo.FaithGain;
+                    influenceMultiplier = cardInfo.InfluenceMultiplier;
+                    description = cardInfo.Description;
+                    cardsToPick = cardInfo.CardsToPickWhenPlayed;
+                }
+                else if (cards[i] is CardInfo info)
+                {
+                    name = info.Name;
+                    rarity = info.Rarity;
+                    faithCost = info.FaithCost;
+                    influenceGain = info.InfluenceGain;
+                    faithGain = info.FaithGain;
+                    influenceMultiplier = info.InfluenceMultiplier;
+                    description = info.Description;
+                    cardsToPick = info.CardsToPickWhenPlayed;
+                }
+
+                // Set color based on rarity
+                color = rarity switch
+                {
+                    1 => ConsoleColor.Gray,      // Common
+                    2 => ConsoleColor.Blue,      // Rare
+                    3 => ConsoleColor.Magenta,   // Epic
+                    4 => ConsoleColor.Yellow,    // Legendary
+                    _ => ConsoleColor.White,     // Default color
+                };
+
+                Console.ForegroundColor = color;
+
+                string row = showIndex ? $"{(i + 1).ToString().PadRight(idxWidth)} | " : "";
+                row += $"{name.PadRight(nameWidth)} | ";
+                row += $"{faithCost.ToString().PadRight(costWidth)} | ";
+                row += $"{influenceGain.ToString().PadRight(influenceWidth)} | ";
+                row += $"{faithGain.ToString().PadRight(faithGainWidth)} | ";
+                row += $"x{influenceMultiplier.ToString("0.0").PadRight(multiplierWidth - 1)}";
+                row += $" | {cardsToPick.ToString().PadRight(cardsToPickWidth)}";
+
+                Console.WriteLine(row);
+            }
+
+            Console.WriteLine(new string('-', header.Length));
+            Console.ResetColor();
+        }
+
+        private static void Restart()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\u001b[1mYour journey has ended.\u001b[0m");
+            Console.WriteLine("Would you like to start a new cult? (Y/N)");
+
+            string? response = Console.ReadLine()?.ToUpper();
+
+            if (response == "N")
+            {
+                // Exit the game
+                Environment.Exit(0);
+            }
+            else if (response == "Y")
+            {
+                // Reset game state variables
+                ascension = 0;
+                influence = 0;
+                day = 0;
+                startingCards = 2;
+                startFaith = 40;
+                neededAscension = 20;
+
+                Console.Clear();
+                Util.StartGame();
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter Y or N.");
+                Console.ReadLine();
+                Restart();
+            }
+        }
     }
 }

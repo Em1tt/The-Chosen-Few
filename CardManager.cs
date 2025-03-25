@@ -5,16 +5,138 @@ namespace The_Chosen_Few
         private List<Card> availableCards = [];
         private List<Card> playerDeck = [];
 
-        public CardManager()
+        public CardManager(int difficulty)
         {
             InitializeCards();
+            InitializeDeckBasedOnDifficulty(difficulty);
         }
 
+        public Card UnlockCard(int index)
+        {
+            // Get unobtained cards
+            List<Card> unobtainedCards = availableCards.Except(playerDeck).ToList();
+            List<Card> selectedCards = GetThreeRandomCards();
+
+            if (index > 0 && index <= selectedCards.Count)
+            {
+                Card unlockedCard = selectedCards[index - 1];
+                // Add the card to the player's deck
+                AddCardToDeck(unlockedCard);
+                return unlockedCard;
+            }
+            throw new ArgumentOutOfRangeException(nameof(index), "Invalid card index.");
+        }
+
+        public Card GetRandomCard(List<Card> hand, List<CardInfo> played)
+        {
+            Random rnd = new Random();
+            Card randomCard;
+            do
+            {
+                int index = rnd.Next(playerDeck.Count);
+                randomCard = playerDeck[index];
+            } while (hand.Contains(randomCard) || played.Any(card => card.Name == randomCard.Name));
+            return randomCard;
+        }
+
+        public List<Card> GetThreeRandomCards()
+        {
+            // Get all cards that haven't been obtained yet 
+            List<Card> unobtainedCards = availableCards.Except(playerDeck).ToList();
+            List<Card> selectedCards = new List<Card>();
+
+            Random rnd = new Random();
+
+            // If we have 3 or fewer unobtained cards, add all of them
+            if (unobtainedCards.Count <= 3)
+            {
+                return new List<Card>(unobtainedCards);
+            }
+
+            // Otherwise, select 3 cards using weighted random selection
+            for (int i = 0; i < 3; i++)
+            {
+                if (unobtainedCards.Count == 0) break;
+
+                // Calculate inverse weights - the lower the rarity number, the higher the chance
+                // 5 - rarity ensures rarity 1 has weight 4, and rarity 4 has weight 1
+                int totalWeight = unobtainedCards.Sum(card => 5 - card.Rarity);
+                int randomWeight = rnd.Next(totalWeight);
+                int currentWeight = 0;
+
+                foreach (var card in unobtainedCards)
+                {
+                    // Use inverse weighting: higher rarity (4) has lower chance than lower rarity (1)
+                    currentWeight += 5 - card.Rarity;
+                    if (currentWeight >= randomWeight)
+                    {
+                        selectedCards.Add(card);
+                        unobtainedCards.Remove(card);
+                        break;
+                    }
+                }
+            }
+
+            return selectedCards;
+        }
+
+        public void InitializeDeckBasedOnDifficulty(int difficulty)
+        {
+            switch (difficulty)
+            {
+                case 1:
+                    InitializeEasyCards();
+                    break;
+                case 2:
+                    InitializeMediumCards();
+                    break;
+                case 3:
+                    InitializeHardCards();
+                    break;
+                default:
+                    throw new ArgumentException("Invalid difficulty level");
+            }
+        }
+
+        private void InitializeEasyCards()
+        {
+            playerDeck.Add(new TheFirstSermon());
+            playerDeck.Add(new SeanceOfTheLost());
+            playerDeck.Add(new TheBloodlettingRitual());
+            playerDeck.Add(new Tetragrammaton());
+        }
+
+        private void InitializeMediumCards()
+        {
+            // Add medium level cards
+            playerDeck.Add(new TheFirstSermon());
+            playerDeck.Add(new TheBloodlettingRitual());
+            playerDeck.Add(new Tetragrammaton());
+        }
+
+        private void InitializeHardCards()
+        {
+            // Add hard level cards
+            playerDeck.Add(new TheFirstSermon());
+            playerDeck.Add(new TheBloodlettingRitual());
+        }
         private void InitializeCards()
         {
-            // Add initial cards to available cards
             availableCards.Add(new TheFirstSermon());
-            // Add more starter cards here
+            availableCards.Add(new GatherTheFaithful());
+            availableCards.Add(new TheRiteOfDivination());
+            availableCards.Add(new SeanceOfTheLost());
+            availableCards.Add(new TheBloodlettingRitual());
+            availableCards.Add(new Kohenet());
+            availableCards.Add(new TheBlackMass());
+            availableCards.Add(new TheDevilsPact());
+            availableCards.Add(new ChantOfTheFallenSeraph());
+            availableCards.Add(new DemonicFavor());
+            availableCards.Add(new PreliminaryInvocation());
+            availableCards.Add(new Shemhamphorash());
+            availableCards.Add(new Primeumaton());
+            availableCards.Add(new Tetragrammaton());
+            availableCards.Add(new Anaphaxeton());
         }
 
         public List<Card> GetPlayerDeck()
@@ -29,138 +151,146 @@ namespace The_Chosen_Few
 
         public void UpgradeCard(Card card)
         {
-            card.Upgrade();
-        }
-    }
+            GameManager.cardsUpgraded++;
+            // We don't need to manually set properties
+            // Just increase the level and let the card class handle the upgrades
+            card.UpgradeLevel++;
 
-    public abstract class Card
-    {
-        // Base properties
-        protected int influenceGain;
-        protected int faithCost;
-        protected int faithGain;
-        protected string name;
-        protected string description;
-        protected int upgradeLevel = 0;
-        protected int maxUpgradeLevel; // No default value, each card will set this
-
-        // Card traits and effects
-        protected int cardsToPickWhenPlayed = 0;
-        protected float influenceMultiplier = 1.0f;
-        protected bool causesGlitch = false;
-        protected bool targetsFaithful = false;
-
-        // Public getters
-        public int FaithCost => faithCost;
-        public int FaithGain => faithGain;
-        public int InfluenceGain => influenceGain;
-        public float InfluenceMultiplier => influenceMultiplier;
-        public string Name => name;
-        public string Description => description;
-        public int UpgradeLevel => upgradeLevel;
-
-        // Play the card - returns gained influence
-        public virtual int Play(GameState gameState)
-        {
-            // Basic functionality when card is played
-            int gainedInfluence = CalculateInfluenceGain(gameState);
-
-            // Handle card effects
-            if (cardsToPickWhenPlayed > 0)
-                gameState.DrawCards(cardsToPickWhenPlayed);
-
-            if (causesGlitch)
-                gameState.TriggerGlitchEffect();
-
-            return gainedInfluence;
-        }
-
-        protected virtual int CalculateInfluenceGain(GameState gameState)
-        {
-            // Base calculation with multiplier
-            return (int)(influenceGain * influenceMultiplier * gameState.GetCurrentMultiplier());
-        }
-
-        public virtual void Upgrade()
-        {
-            if (upgradeLevel < maxUpgradeLevel)
+            // Call the card's ApplyUpgradeEffects method using reflection
+            try
             {
-                upgradeLevel++;
-                ApplyUpgradeEffects();
+                Type cardType = card.GetType();
+                var upgradeMethod = cardType.GetMethod("ApplyUpgradeEffects",
+                                                    System.Reflection.BindingFlags.Instance |
+                                                    System.Reflection.BindingFlags.NonPublic);
+
+                if (upgradeMethod != null)
+                {
+                    upgradeMethod.Invoke(card, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error applying upgrade: {ex.Message}");
             }
         }
 
-        protected virtual void ApplyUpgradeEffects()
+        public List<Card> GetRandomCardsFromDeck(int count)
         {
-            // Base upgrade effects - override in specific cards
-            influenceGain += (int)(influenceGain * 0.25f); // 25% increase
-            faithCost = Math.Max(1, faithCost - 1); // Decrease cost by 1, minimum 1
-        }
+            List<Card> result = new List<Card>();
+            List<Card> availableForUpgrade = playerDeck.Where(c => c.UpgradeLevel < c.MaxUpgradeLevel).ToList();
 
-        // Helper method to display card info
-        public virtual string GetCardInfo()
-        {
-            return $"{name} (Level {upgradeLevel})\n" +
-                   $"Cost: {faithCost} Faith | Influence: {influenceGain}\n" +
-                   $"{description}";
-        }
-    }
+            // If there are no cards to upgrade, return empty list
+            if (availableForUpgrade.Count == 0)
+                return result;
 
-    // Example card implementation
-    public class TheFirstSermon : Card
-    {
-        public TheFirstSermon()
-        {
-            name = "The First Sermon";
-            description = "Your first message to the faithful. Simple but powerful.";
-            faithCost = 20;
-            influenceGain = 30;
-            cardsToPickWhenPlayed = 0;
-            influenceMultiplier = 1.0f;
-            maxUpgradeLevel = 10;
-        }
+            // If we have fewer cards than requested, return them all
+            if (availableForUpgrade.Count <= count)
+                return new List<Card>(availableForUpgrade);
 
-        protected override void ApplyUpgradeEffects()
-        {
-            switch (upgradeLevel)
+            // Select 'count' random cards
+            Random rnd = new Random();
+            while (result.Count < count && availableForUpgrade.Count > 0)
             {
-                case 1:
-                    influenceGain = 35;
-                    faithCost = 2;
-                    cardsToPickWhenPlayed = 1;
-                    break;
-
-                case 2:
-                    description = "Your charismatic words inspire the faithful.";
-                    influenceGain = 12;
-                    faithCost = 1;
-                    cardsToPickWhenPlayed = 1;
-                    break;
-
-                case 3:
-                    description = "Your divine sermon reaches deep into the souls of your followers.";
-                    influenceGain = 15;
-                    faithCost = 1;
-                    cardsToPickWhenPlayed = 2; // Now draws two cards!
-                    break;
+                int index = rnd.Next(availableForUpgrade.Count);
+                result.Add(availableForUpgrade[index]);
+                availableForUpgrade.RemoveAt(index);
             }
+
+            return result;
         }
 
-        public override int Play(GameState gameState)
+        public CardUpgradeInfo GetCardUpgradeInfo(Card card)
         {
-            // Special effect for The First Sermon
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Your words echo through the congregation...");
-            Console.ResetColor();
+            // Create a new info object
+            CardUpgradeInfo info = new CardUpgradeInfo();
 
-            return base.Play(gameState);
+            // We'll use reflection to get the next upgrade stats
+            // This works by creating a temporary copy of the card and applying the upgrade
+
+            // 1. Create a temporary copy of the card
+            Card tempCard;
+            try
+            {
+                // Create a new instance of the specific card type
+                tempCard = (Card)Activator.CreateInstance(card.GetType());
+
+                // Copy the current stats
+                tempCard.FaithCost = card.FaithCost;
+                tempCard.FaithGain = card.FaithGain;
+                tempCard.InfluenceGain = card.InfluenceGain;
+                tempCard.InfluenceMultiplier = card.InfluenceMultiplier;
+
+                // Set the upgrade level to current + 1 (to see next level)
+                tempCard.UpgradeLevel = card.UpgradeLevel + 1;
+
+                // Call the card's internal upgrade method (simulates an upgrade)
+                Type cardType = tempCard.GetType();
+                var upgradeMethod = cardType.GetMethod("ApplyUpgradeEffects",
+                                                     System.Reflection.BindingFlags.Instance |
+                                                     System.Reflection.BindingFlags.NonPublic);
+
+                if (upgradeMethod != null)
+                {
+                    upgradeMethod.Invoke(tempCard, null);
+                }
+
+                // Get the upgraded stats
+                info.NewFaithCost = tempCard.FaithCost;
+                info.NewFaithGain = tempCard.FaithGain;
+                info.NewInfluenceGain = tempCard.InfluenceGain;
+                info.NewInfluenceMultiplier = tempCard.InfluenceMultiplier;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting upgrade info: {ex.Message}");
+
+                // Fallback to basic calculation if reflection fails
+                info.NewFaithCost = Math.Max(1, card.FaithCost - 3);
+                info.NewFaithGain = card.FaithGain + 3;
+                info.NewInfluenceGain = card.InfluenceGain;
+                info.NewInfluenceMultiplier = card.InfluenceMultiplier + 0.1;
+            }
+
+            return info;
+        }
+
+        public List<Card> DrawCards(int count, List<Card> playedCards)
+        {
+            // Get available cards (cards in the deck that haven't been played this turn)
+            List<Card> availableCards = playerDeck.Where(card => !playedCards.Contains(card)).ToList();
+
+            // Prepare the result list
+            List<Card> drawnCards = new List<Card>();
+
+            // If no cards are available, return an empty list
+            if (availableCards.Count == 0)
+                return drawnCards;
+
+            // Determine how many cards we can actually draw
+            int cardsToDrawCount = Math.Min(count, availableCards.Count);
+
+            // Use random selection to draw cards
+            Random rnd = new Random();
+            for (int i = 0; i < cardsToDrawCount; i++)
+            {
+                int index = rnd.Next(availableCards.Count);
+                drawnCards.Add(availableCards[index]);
+                availableCards.RemoveAt(index);
+            }
+
+            return drawnCards;
         }
     }
 
     // Helper class to maintain game state
     public class GameState
     {
-        private float currentMultiplier = 1.0f;
+        public float GetCurrentMultiplier()
+        {
+            return currentMultiplier;
+        }
+        public float currentMultiplier { get; set; } = 1.0f;
         private List<Card> hand = new List<Card>();
         private CardManager cardManager;
 
@@ -169,27 +299,43 @@ namespace The_Chosen_Few
             this.cardManager = cardManager;
         }
 
-        public void DrawCards(int count)
+        public void DrawCards(int count, List<Card> playedCards)
         {
-            // Implementation for drawing cards
-            Console.WriteLine($"Drawing {count} cards...");
+            // Use the CardManager's method to draw cards
+            List<Card> drawnCards = cardManager.DrawCards(count, playedCards);
+
+            // Add the drawn cards to the hand
+            foreach (Card card in drawnCards)
+            {
+                hand.Add(card);
+            }
+
+            // Inform the player about the drawn cards
+            Console.WriteLine($"Drew {drawnCards.Count} card(s).");
         }
 
-        public void TriggerGlitchEffect()
+        public List<Card> GetHand()
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Reality glitches around you...");
-            Console.ResetColor();
+            return hand;
         }
 
-        public float GetCurrentMultiplier()
+        public void ClearHand()
         {
-            return currentMultiplier;
+            hand.Clear();
         }
 
         public void SetMultiplier(float multiplier)
         {
             currentMultiplier = multiplier;
         }
+    }
+
+    // Add this class to store upgrade preview information
+    public class CardUpgradeInfo
+    {
+        public int NewFaithCost { get; set; }
+        public int NewInfluenceGain { get; set; }
+        public int NewFaithGain { get; set; }
+        public double NewInfluenceMultiplier { get; set; }
     }
 }

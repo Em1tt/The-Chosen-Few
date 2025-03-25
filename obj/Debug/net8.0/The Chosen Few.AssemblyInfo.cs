@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("The Chosen Few")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4ae53d8b08b9a2044b99454a24cd41fa1a4938bb")]
 [assembly: System.Reflection.AssemblyProductAttribute("The Chosen Few")]
 [assembly: System.Reflection.AssemblyTitleAttribute("The Chosen Few")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
